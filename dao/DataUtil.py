@@ -42,7 +42,7 @@ class DataUtil:
         sql = '''
             select *
             from proxy
-            where %s='%s'
+            where %s = '%s'
         ''' % fields
         sql = sql.replace('=', is_equal)
         result = self.conn.execute(sql)
@@ -104,9 +104,9 @@ if __name__ == '__main__':
     #     util.insert_proxy_item(key)
     print util.search_proxy_item_by_fields(('type', 'https'), '=')
     util.update_proxy_item_by_conditions(item)
-    print util.search_proxy_item_by_fields(('type', 'http'))
+    print util.search_proxy_item_by_fields(('type', 'http'), '=')
     util.delete_proxy_item(('123.123.123.127', '80'))
-    print util.search_proxy_item_by_fields(('type', 'https'))
+    print util.search_proxy_item_by_fields(('type', 'https'), '=')
     util.close()
 
 
