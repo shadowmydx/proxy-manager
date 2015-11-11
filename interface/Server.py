@@ -9,34 +9,41 @@ from util.Logger import Logger
 from Interface import Interface
 from BaseHTTPServer import BaseHTTPRequestHandler
 from cgi import parse_header, parse_multipart
+from SocketServer import ThreadingMixIn
+from BaseHTTPServer import HTTPServer
 __author__ = 'shadowmydx'
 
 
 class HttpConnection:
 
-    version_dict = {11: 'HTTP/1.1'}
-
     def __init__(self):
-        self.proxy = ('127.0.0.1', 8087)
+        pass
 
-    def connect(self, method, url, request_header):
-        conn = httplib.HTTPConnection(self.proxy[0], self.proxy[1])
-        if request_header:
-            conn.request(method, url, headers=request_header)
-        else:
-            conn.request(method, url)
-        response = conn.getresponse()
-        print self.version_dict[response.version], response.status, response.reason
-        print str(response.msg)
-        print len(response.read())
+    class Connection(Interface):
+
+        version_dict = {11: 'HTTP/1.1'}
+
+        def __init__(self):
+            Interface.__init__(self)
+            self.proxy = ('127.0.0.1', 8087)
+
+        def connect(self, method, url, request_header, request_body):
+            conn = httplib.HTTPConnection(self.proxy[0], self.proxy[1])
+            if request_header:
+                conn.request(method, url, headers=request_header, body=request_body)
+            else:
+                conn.request(method, url, body=request_body)
+            response = conn.getresponse()
+            return self.version_dict[response.version], response.status, response.reason, response.msg, response.read()
+
+    connection_instance = Connection()
+
+    @staticmethod
+    def get_single_instance():
+        return HttpConnection.connection_instance
+
 
 class HttpHandler(BaseHTTPRequestHandler):
-
-    # def do_METHOD(self):
-    #     print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-    #     self.send_response(200)
-    #     self.end_headers()
-    #     self.wfile.write('hello world')
 
     def parse_body(self):
         try:
@@ -56,103 +63,143 @@ class HttpHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.body = self.parse_body()
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_POST(self):
         print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_CONNECT(self):
         print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_PUT(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_HEAD(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_OPTIONS(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_DELETE(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
     def do_TRACE(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write('hello world')
+        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+        try:
+            body = self.parse_body()
+            conn = HttpConnection.get_single_instance()
+            headers = dict()
+            for key in self.headers:
+                headers[key] = self.headers[key]
+            response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
+            self.send_response(response_tuple[1])
+            for key in response_tuple[3]:
+                self.send_header(key, response_tuple[3][key])
+            self.end_headers()
+            self.wfile.write(response_tuple[4])
+        except:
+            pass
 
-class Handler(threading.Thread):
-    
-    def __init__(self, clientsocket, proxy_ip):
-        threading.Thread.__init__(self)
-        self.clientsocket = clientsocket
-        Logger.log(clientsocket)
-        self.proxy_ip = proxy_ip
-    
-    def run(self):
-        data_chunck = u''
-        rec_data = 0
-        s = socket.socket(
-                socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(self.proxy_ip)
-        while True:
-            tmp_chunck = self.clientsocket.recv(1024)
-            s.sendall(tmp_chunck)
-            data_chunck += str(tmp_chunck)
-            if data_chunck.find('\r\n\r\n') != -1:
-                Logger.log(data_chunck)
-                break
-        Logger.log('end')
-        data_chunck = u''
-        while True:
-            tmp_chunck = s.recv(1024)
-            self.clientsocket.sendall(tmp_chunck)
-            data_chunck += str(tmp_chunck)
-            border = data_chunck.find('\r\n\r\n')
-            if border != -1:
-                Logger.log(data_chunck)
-                break
-        Logger.log('end2')
 
-class ProxyServer(Interface):
-    
-    def __init__(self):
-        Interface.__init__(self)
-        self.port = 7890
-        self.ip_addresses = [('127.0.0.1', 8087)]
-        
-    def run(self): 
-        serversocket = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM)
-        serversocket.bind(('127.0.0.1', self.port))
-        serversocket.listen(5)
-        while True:
-            (clientsocket, address) = serversocket.accept()
-            Logger.log(address)
-            ct = Handler(clientsocket, random.choice(self.ip_addresses))
-            ct.start()
+class ThreadServer(ThreadingMixIn, HTTPServer):
+    pass
         
 if __name__ == '__main__':
     # server = ProxyServer()
@@ -161,10 +208,9 @@ if __name__ == '__main__':
     # while True:
     #     pass
 
-    # from BaseHTTPServer import HTTPServer
-    # server = HTTPServer(('localhost', 7890), HttpHandler)
-    # Logger.log('Starting server at 7890')
-    # server.serve_forever()
+    server = ThreadServer(('localhost', 7890), HttpHandler)
+    Logger.log('Starting server at 7890')
+    server.serve_forever()
 
-    h = HttpConnection()
-    h.connect('GET', 'http://www.zhihu.com', None)
+    # h = HttpConnection.get_single_instance()
+    # h.connect('GET', 'http://www.zhihu.com', None)
