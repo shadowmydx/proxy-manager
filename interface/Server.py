@@ -76,7 +76,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_POST(self):
         print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -93,7 +93,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_CONNECT(self):
         print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -110,7 +110,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_PUT(self):
         # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -127,7 +127,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_HEAD(self):
         # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -144,7 +144,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_OPTIONS(self):
         # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -161,7 +161,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_DELETE(self):
         # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -178,7 +178,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
     def do_TRACE(self):
         # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
@@ -195,7 +195,7 @@ class HttpHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
-            pass
+            self.send_error(500)
 
 
 class ThreadServer(ThreadingMixIn, HTTPServer):
