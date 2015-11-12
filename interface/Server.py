@@ -22,6 +22,7 @@ class HttpConnection:
     class Connection(Interface):
 
         version_dict = {11: 'HTTP/1.1'}
+        TIME_OUT = 10
 
         def __init__(self):
             Interface.__init__(self)
@@ -30,10 +31,18 @@ class HttpConnection:
         def connect(self, method, url, request_header, request_body):
             conn = httplib.HTTPConnection(self.proxy[0], self.proxy[1])
             if request_header:
-                conn.request(method, url, headers=request_header, body=request_body)
+                if request_body:
+                    conn.request(method, url, headers=request_header, body=request_body)
+                else:
+                    conn.request(method, url, headers=request_header)
             else:
-                conn.request(method, url, body=request_body)
+                if request_body:
+                    conn.request(method, url, body=request_body)
+                else:
+                    conn.request(method, url)
             response = conn.getresponse()
+            if method == 'CONNECT':
+                return self.version_dict[response.version], response.status, response.reason, response.msg, None
             return self.version_dict[response.version], response.status, response.reason, response.msg, response.read()
 
     connection_instance = Connection()
@@ -60,9 +69,9 @@ class HttpHandler(BaseHTTPRequestHandler):
             return postvars
         except:
             return None    
-
+ 
     def do_GET(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
+           
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -71,15 +80,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_POST(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -88,15 +100,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_CONNECT(self):
-        print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -105,15 +120,19 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
-            self.wfile.write(response_tuple[4])
         except:
+            import traceback
+            traceback.print_exc()
             self.send_error(500)
 
     def do_PUT(self):
-        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -122,15 +141,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_HEAD(self):
-        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -139,15 +161,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_OPTIONS(self):
-        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -156,15 +181,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_DELETE(self):
-        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -173,15 +201,18 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
             self.send_error(500)
 
     def do_TRACE(self):
-        # print '\r\n'.join([str(self.command) + ' ' + str(self.path) + ' ' + str(self.request_version), str(self.headers)])
         try:
             body = self.parse_body()
             conn = HttpConnection.get_single_instance()
@@ -190,8 +221,12 @@ class HttpHandler(BaseHTTPRequestHandler):
                 headers[key] = self.headers[key]
             response_tuple = conn.connect(str(self.command), str(self.path), headers, body)
             self.send_response(response_tuple[1])
-            for key in response_tuple[3]:
-                self.send_header(key, response_tuple[3][key])
+            try:
+                for key in response_tuple[3]:
+                    self.send_header(key, response_tuple[3][key])
+            except:
+                import traceback
+                traceback.print_exc()
             self.end_headers()
             self.wfile.write(response_tuple[4])
         except:
